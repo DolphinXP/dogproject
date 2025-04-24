@@ -1,0 +1,1 @@
+nuitka     --standalone      --onefile    --include-data-files=client.html=client.html     --include-data-files=client.js=client.js     --output-dir=dist     main.py
