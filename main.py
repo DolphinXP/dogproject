@@ -59,7 +59,7 @@ async def offer(request):
             text=f"Error: {str(e)}"
         )
 
-async def cameraControl(request):
+async def camera_control(request):
     """Handle camera control commands"""
     global double_fake_camera
 
@@ -137,7 +137,7 @@ def main():
     # app.router.add_get("/", index)
     # app.router.add_get("/client.js", javascript)
     app.router.add_post("/offer", offer)
-    app.router.add_post("/cameraControl", cameraControl)
+    app.router.add_post("/camera_control", camera_control)
     app.router.add_get("/status", connection_status)  # Added a status endpoint
 
     # Enable CORS

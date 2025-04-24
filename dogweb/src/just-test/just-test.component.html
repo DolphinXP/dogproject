@@ -1,0 +1,31 @@
+
+<div class="container">
+  <h1>WebRTC Video Stream</h1>
+
+  <div>
+    <div id="statusIndicator" #statusIndicator>Status: Not connected</div>
+    <div class="controls">
+      <button pButton type="button" label="Connect to Stream" (click)="connectToStream()"></button>
+      <button pButton type="button" label="Start Camera" (click)="startCamera()"></button>
+      <button pButton type="button" label="Stop Camera" (click)="stopCamera()"></button>
+      <button pButton type="button" label="Close Connection" (click)="closeConnection()"></button>
+    </div>
+  </div>
+
+  <div>
+    <h2>Video Stream:</h2>
+    <div id="videoContainer">
+      <video id="videoElement" #videoElement  autoplay playsinline controls></video>
+      <div id="videoInfo" #videoInfo></div>
+    </div>
+  </div>
+
+  <h3>Log:</h3>
+  <div id="log" #logElement></div>
+</div>
+<div class="card flex justify-center">
+  <p-button label="Check" />
+</div>
+<h1 class="text-3xl font-bold underline">
+  Hello world!
+</h1>

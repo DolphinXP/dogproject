@@ -323,7 +323,7 @@ function closeConnection() {
 // Event listeners
 connectButton.addEventListener('click', connectToStream);
 startCamera.addEventListener('click', () => {
-    const response =  fetch('http://31.41.59.100:8080/cameraControl', {
+    const response =  fetch('http://31.41.59.100:8080/camera_control', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -334,7 +334,7 @@ startCamera.addEventListener('click', () => {
             });
 });
 stopCamera.addEventListener('click', () => {
-    const response =  fetch('http://31.41.59.100:8080/cameraControl', {
+    const response =  fetch('http://31.41.59.100:8080/camera_control', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

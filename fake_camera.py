@@ -72,6 +72,8 @@ class FakeCamera():
 
     def _play_video(self):
         last_log_time = 0
+
+        # don't using this
         return
 
         while self.running and self.capture and self.capture.isOpened():

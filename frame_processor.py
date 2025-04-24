@@ -1,22 +1,21 @@
+import numpy as np
+
 from fake_camera import FakeCamera
 import time
 import cv2
 import threading
 import logging
 
-logger = logging.getLogger("doublefakecamera")
+logger = logging.getLogger("frameprocessor")
 
-class FrameProcessor(FakeCamera):
+class FrameProcessor:
     """
     A class that simulates a camera by generating a test pattern and
     allows for double buffering of frames.
     """
 
     def __init__(self, fps=30):
-        super().__init__(fps)
-        self._buffer = [None, None]
-        self._current_buffer_index = 0
-        self._next_buffer_index = 1
+        self.fps = fps
         self._stop = False
         self._frame_count = 0
         self._start_time = time.time()
@@ -73,27 +72,50 @@ class FrameProcessor(FakeCamera):
         """
         Get the current frame from the left camera.
         """
+
+        last_log_time = 0
+
         while not self._stop:
             loop_start = time.time()
-            # Get the current frame from the left camera
-            left_frame = self._left_camera.get_frame()
-            right_frame = self._right_camera.get_frame()
 
-            if left_frame is None or right_frame is None:
-                logger.warning("Failed to get frames from cameras")
-                continue
+            try:
+                # Get the current frame from the left camera
+                left_frame = self._left_camera.get_frame()
+                right_frame = self._right_camera.get_frame()
 
+                if left_frame is None or right_frame is None:
+                    logger.warning("Failed to get frames from cameras")
+                    continue
 
-            # Combine the frames from both cameras
-            combined_frame = self._combine_frames(left_frame, right_frame)
+                # Log periodically to avoid flooding logs
+                current_time = time.time()
+                if current_time - last_log_time > 5.0:  # Log every 5 seconds
+                    elapsed = current_time - self._start_time
+                    fps = self._frame_count / elapsed if elapsed > 0 else 0
+                    logger.info(f"frame counts={self._frame_count}, fps={fps:.2f}")
+                    last_log_time = current_time
 
-            self.callback(combined_frame)
+                # Combine the frames from both cameras
+                combined_frame = self._combine_frames(left_frame, right_frame)
 
-            processing_time = time.time() - loop_start
-            sleep_time = (1.0 / self.fps) - processing_time
+                self.callback(combined_frame)
+                self._frame_count += 1
 
-            if sleep_time > 0:
-                time.sleep(sleep_time)
+                # Calculate the time taken for processing and sleep if necessary
+                processing_time = time.time() - loop_start
+                sleep_time = (1.0 / self.fps) - processing_time
+
+                if sleep_time > 0:
+                    time.sleep(sleep_time)
+            except Exception as e:
+                # TODO boilerplate
+                logger.error(f"Error processing frames: {str(e)}")
+                emergency_frame = np.zeros((480, 640, 3), dtype=np.uint8)
+                cv2.putText(emergency_frame, f"Error: {str(e)}", (50, 240),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
+                self.callback(emergency_frame)
+                logger.error("Emergency frame sent")
 
 
     def _combine_frames(self, left_frame, right_frame):
