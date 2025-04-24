@@ -148,8 +148,6 @@ class WebRTCServer:
         ]
 
 
-        # 启动定期清理任务
-        asyncio.run(self._start_cleanup_task())
 
         logger.info("WebRTCServer initialized")
 
@@ -288,54 +286,4 @@ class WebRTCServer:
         self.peer_connections.clear()
         self.tracks.clear()
 
-    async def _start_cleanup_task(self):
-        self._cleanup_task = asyncio.create_task(self._periodic_cleanup())
 
-    async def _periodic_cleanup(self):
-        """
-        定期检查并清理断开的连接，
-        处理超时连接
-        """
-        try:
-            while True:
-                await asyncio.sleep(30)  # 每30秒检查一次
-
-                try:
-                    current_time = time.time()
-                    # 复制连接ID，因为我们将修改字典
-                    pc_ids = list(self.peer_connections.keys())
-
-                    for pc_id in pc_ids:
-                        # 跳过正在关闭的连接
-                        if pc_id in self.closing_connections:
-                            continue
-
-                        pc = self.peer_connections.get(pc_id)
-                        if not pc:
-                            continue
-
-                        # 检查连接状态
-                        if pc.connectionState in ["failed", "closed", "disconnected"]:
-                            logger.info(f"Cleanup: Closing {pc_id[:8]} in state {pc.connectionState}")
-                            await self.close_connection(pc_id)
-                            continue
-
-                        # 检查连接超时（5分钟未活动）
-                        last_activity = self.connection_timestamps.get(pc_id, 0)
-                        if current_time - last_activity > 300:  # 5分钟
-                            logger.info(f"Cleanup: Connection {pc_id[:8]} timed out (inactive for 5 minutes)")
-                            await self.close_connection(pc_id)
-
-                    # 日志记录当前状态
-                    if self.peer_connections:
-                        active_conn_count = len(self.peer_connections)
-                        closing_conn_count = len(self.closing_connections)
-                        logger.info(f"Active connections: {active_conn_count}, Closing: {closing_conn_count}")
-
-                except Exception as e:
-                    logger.error(f"Error in periodic cleanup: {str(e)}")
-
-        except asyncio.CancelledError:
-            logger.info("Periodic cleanup task cancelled")
-        except Exception as e:
-            logger.error(f"Unexpected error in cleanup task: {str(e)}")
