@@ -49,6 +49,7 @@ class VideoSource:
         # 检查帧是否过期
         if current_time - self._last_frame_time > 1.0:
             logger.warning("No new frames received for over 1 second")
+            self._last_frame_time = current_time
 
         with self.lock:
             frame = self.current_frame.copy() if self.current_frame is not None else None
