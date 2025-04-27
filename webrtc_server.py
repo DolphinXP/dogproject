@@ -27,6 +27,7 @@ class VideoSource:
         cv2.putText(self.test_frame, "Waiting for camera...", (50, 240),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
         self.current_frame = self.test_frame
+        self.allow_new_frame = True
         self._last_frame_time = time.time()
         self._frame_count = 0
 
@@ -38,9 +39,11 @@ class VideoSource:
     def set_frame(self, frame):
         """更新视频帧"""
         with self.lock:
-            self.current_frame = frame.copy() if frame is not None else None
-            self._frame_count += 1
-            self._last_frame_time = time.time()
+            if self.allow_new_frame:
+                self.current_frame = frame.copy() if frame is not None else None
+                self._frame_count += 1
+                self._last_frame_time = time.time()
+                self.allow_new_frame = False
 
     def get_frame(self):
         """获取当前帧"""
@@ -52,14 +55,19 @@ class VideoSource:
             self._last_frame_time = current_time
 
         with self.lock:
+            # 总是返回当前帧，不管allow_new_frame的状态
             frame = self.current_frame.copy() if self.current_frame is not None else None
+            # 设置标志允许新帧
+            self.allow_new_frame = True
 
-        # 验证帧
-        if frame is None or frame.size == 0:
-            logger.error("Frame is None or empty, using test pattern")
-            frame = self.test_frame
+            # 验证帧
+            if frame is None or frame.size == 0 or frame.shape[0] > 2304 or frame.shape[1] > 4096:
+                logger.error("Frame is None or empty, using test pattern")
+                frame = self.get_test_frame()
 
         return frame, self._frame_count
+
+
 
 
 class VideoStreamTrack(MediaStreamTrack):
@@ -99,9 +107,6 @@ class VideoStreamTrack(MediaStreamTrack):
                 logger.info(f"Track processing frame {self._frame_count}, FPS: {fps:.2f}")
                 self._last_log_time = current_time
 
-            if frame is None or frame.size == 0 or frame.shape[0] > 2304 or frame.shape[1] > 4096:
-                logger.error("Frame is None or empty, using test pattern")
-                frame = self.source.get_test_frame()
 
             # 创建VideoFrame
             video_frame = VideoFrame.from_ndarray(frame, format="rgb24")
@@ -132,10 +137,9 @@ class WebRTCServer:
     WebRTC服务器，管理多个对等连接
     """
 
-    def __init__(self, fps=30):
+    def __init__(self):
         # 视频源
         self.video_source = VideoSource()
-        self.fps = fps
 
         # WebRTC组件
         self.peer_connections: Dict[str, RTCPeerConnection] = {}
@@ -197,7 +201,7 @@ class WebRTCServer:
                     await self.close_connection(pc_id)
 
             # 为此连接创建新的视频轨道
-            track = VideoStreamTrack(self.video_source, self.fps)
+            track = VideoStreamTrack(self.video_source)
             self.tracks[pc_id] = track
 
             # 添加轨道到对等连接

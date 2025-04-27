@@ -4,6 +4,8 @@ import json
 import logging
 import os
 import sys
+
+import traceback
 import aiohttp_cors
 from aiohttp import web
 
@@ -52,7 +54,6 @@ async def offer(request):
         )
     except Exception as e:
         logger.error(f"Error handling offer: {str(e)}")
-        import traceback
         logger.error(traceback.format_exc())
         return web.Response(
             status=500,
@@ -119,7 +120,7 @@ def main():
     )
 
     # Initialize WebRTC server
-    webrtc_server = WebRTCServer(fps=30)
+    webrtc_server = WebRTCServer()
     logger.info(f"Created WebRTCServer")
 
     # Initialize camera with video file
