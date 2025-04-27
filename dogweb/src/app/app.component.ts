@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import {JustTestComponent} from '../just-test/just-test.component';
+import {Component} from '@angular/core';
+import {TopBarComponent} from '../top-bar/top-bar.component';
+import {VisViewComponent} from '../vis-view/vis-view.component';
+import {FooterComponent} from '../footer/footer.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, JustTestComponent],
+  imports: [TopBarComponent, VisViewComponent, FooterComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
