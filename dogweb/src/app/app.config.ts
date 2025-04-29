@@ -5,7 +5,7 @@ import {routes} from './app.routes';
 
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 import {providePrimeNG} from 'primeng/config';
-import MyPreset from './mypreset';
+import Nora from '@primeng/themes/Nora';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({eventCoalescing: true}),
@@ -13,7 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: MyPreset
+        preset: Nora
       }
     })]
 };

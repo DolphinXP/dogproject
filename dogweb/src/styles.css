@@ -1,6 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+@import "primeicons/primeicons.css";
 
-/*body {*/
-/*  background-color: #11191F;*/
-/*}*/
+html, body, #app-root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}

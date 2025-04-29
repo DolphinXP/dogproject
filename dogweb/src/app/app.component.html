@@ -1,24 +1,15 @@
-<div class="flex flex-col justify-between w-dvw h-dvh min-w-[1800px]">
-  <!-- Header -->
-  <div class="w-full min-w-[1800px] shadow-md bg-gray-50 mx-auto sticky top-0 z-10 px-10 mb-6">
-    <app-top-bar></app-top-bar>
-  </div>
-
-  <!-- Main Content -->
-  <div class="flex flex-col grow w-[1800px] mx-auto">
-    <div class="flex grow place-items-center">
-      <app-vis-view></app-vis-view>
-      <app-vis-view></app-vis-view>
+<div class="flex flex-col h-dvh">
+  <div class="flex flex-1 w-dvw top-0 z-10">
+    <!-- Left func -->
+    <div class="flex flex-col grow max-w-xl h-full">
+      <img class="w-full object-cover" src="images/map.webp">
+      <app-compact-list class="overflow-auto flex-1"></app-compact-list>
     </div>
-
-    <div class="flex grow place-items-center">
-
+    <!-- Main Content -->
+    <div class="flex flex-col grow w-full h-full">
+      <app-vis-view class="h-full"></app-vis-view>
     </div>
   </div>
-
   <!-- Footer - Always at bottom -->
-  <div
-    class="w-full min-w-[1800px] h-[50px] min-h-[50px] max-h-[50px] sticky bottom-0 z-10 mt-6">
-    <app-footer></app-footer>
-  </div>
+  <app-footer class="flex w-dvw items-center h-20 sticky bottom-0 z-10 bg-black"></app-footer>
 </div>

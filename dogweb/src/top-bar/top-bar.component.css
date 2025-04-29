@@ -1,0 +1,21 @@
+
+a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #efefef;
+  background-color: #292A2E;;
+  border: 1px solid #595A5E;
+  padding: 5px;
+  min-width: 150px;
+}
+
+a:hover {
+  background-color: #595A5E;
+  color: #efefef;
+}
+
+a:active {
+  background-color: rgb(0, 0, 0);
+  color: white;
+}

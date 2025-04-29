@@ -1,11 +1,11 @@
 import {Component} from '@angular/core';
-import {TopBarComponent} from '../top-bar/top-bar.component';
 import {VisViewComponent} from '../vis-view/vis-view.component';
 import {FooterComponent} from '../footer/footer.component';
+import {CompactListComponent} from '../compact-list/compact-list.component';
 
 @Component({
   selector: 'app-root',
-  imports: [TopBarComponent, VisViewComponent, FooterComponent],
+  imports: [VisViewComponent, FooterComponent, CompactListComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
