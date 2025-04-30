@@ -1,11 +1,10 @@
 import {Component} from '@angular/core';
-import {VisViewComponent} from '../vis-view/vis-view.component';
+import {RouterOutlet} from '@angular/router';
 import {FooterComponent} from '../footer/footer.component';
-import {CompactListComponent} from '../compact-list/compact-list.component';
 
 @Component({
   selector: 'app-root',
-  imports: [VisViewComponent, FooterComponent, CompactListComponent],
+  imports: [RouterOutlet, FooterComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

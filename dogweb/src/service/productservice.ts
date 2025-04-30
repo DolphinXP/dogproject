@@ -1204,11 +1204,11 @@ export class ProductService {
   }
 
   getProductsMini() {
-    return Promise.resolve(this.getProductsData().slice(0, 5));
+    return Promise.resolve(this.getProductsData().slice(0, 35));
   }
 
   getProductsSmall() {
-    return Promise.resolve(this.getProductsData().slice(0, 10));
+    return Promise.resolve(this.getProductsData().slice(0, 40));
   }
 
   getProducts() {
@@ -1216,7 +1216,7 @@ export class ProductService {
   }
 
   getProductsWithOrdersSmall() {
-    return Promise.resolve(this.getProductsWithOrdersData().slice(0, 10));
+    return Promise.resolve(this.getProductsWithOrdersData().slice(0, 50));
   }
 
   getProductsWithOrders() {

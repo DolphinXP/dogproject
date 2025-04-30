@@ -3,28 +3,43 @@
     <img alt="Logo" class="h-12" src="images/logo.png">
     <span class="text-3xl font-bold text-white">NYU-B System</span>
   </div>
-  <div class="flex items-center justify-center gap-2 flex-none gap-2">
+  <div class="flex items-center justify-center gap-4">
+
+    <button (click)="onHomeClick()" class="flex items-center justify-center p-2 cursor-pointer rounded-full ">
+      <img alt="Test" class="h-12 w-12 hover:filter hover:brightness-50" src="images/home.png">
+    </button>
+
+    <button #startStreamButton (click)="onStartStreamClick()"
+            class="flex items-center gap-2 justify-center p-2 cursor-pointer rounded-full ">
+      <img alt="Start" class="h-12 w-12 hover:filter hover:brightness-50" src="images/start.png">
+    </button>
+    <button #stopStreamButton (click)="onStopStreamClick($event)"
+            class="flex items-center gap-2 justify-center p-2 cursor-pointer rounded-full ">
+      <img alt="Stop" class="h-12 w-12 hover:filter hover:brightness-50" src="images/stop.png">
+    </button>
+
 
     <button class="flex items-center justify-center p-2 cursor-pointer rounded-full ">
-      <img alt="Settings" class="h-12 w-12 hover:filter hover:brightness-50" src="images/start.png">
-    </button>
-    <button class="flex items-center justify-center p-2 cursor-pointer rounded-full ">
-      <img alt="Settings" class="h-12 w-12 hover:filter hover:brightness-50" src="images/stop.png">
-    </button>
-    <button class="flex items-center justify-center p-2 cursor-pointer rounded-full ">
-      <img alt="Settings" class="h-12 w-12 hover:filter hover:brightness-50" src="images/lens.png">
+      <img alt="Capture" class="h-12 w-12 hover:filter hover:brightness-50" src="images/lens.png">
     </button>
 
     <!--    <div class="w-2"></div>-->
 
     <button class="flex items-center justify-center p-2 cursor-pointer rounded-full ">
-      <img alt="Settings" class="h-12 w-12 hover:filter hover:brightness-50" src="images/list.png">
+      <img alt="List" class="h-12 w-12 hover:filter hover:brightness-50" src="images/list.png">
     </button>
     <button class="flex items-center justify-center p-2 cursor-pointer rounded-full ">
       <img alt="Settings" class="h-12 w-12 hover:filter hover:brightness-50" src="images/setting.png">
     </button>
+
+    <button (click)="onTestClick()" class="flex items-center justify-center p-2 cursor-pointer rounded-full ">
+      <img alt="Test" class="h-12 w-12 hover:filter hover:brightness-50" src="images/test.png">
+    </button>
   </div>
   <div class="flex items-center text-xs text-gray-300 flex-none">
-    CPU: 50% / RAM: 60% / Disk: 70% / Network: 80%
+    CPU: 50% / RAM: 60% / Disk: 70%
   </div>
 </div>
+
+
+<p-confirmDialog/>

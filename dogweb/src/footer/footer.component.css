@@ -1,0 +1,10 @@
+
+.button-disabled {
+  cursor: not-allowed;
+}
+
+.button-disabled img {
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
+

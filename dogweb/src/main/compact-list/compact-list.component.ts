@@ -1,9 +1,7 @@
 import {Component, inject, signal} from '@angular/core';
 import {DataView} from 'primeng/dataview';
-import {Product} from '../domain/product';
-import {Button} from 'primeng/button';
-import {Tag} from 'primeng/tag';
-import {ProductService} from '../service/productservice';
+import {Product} from '../../domain/product';
+import {ProductService} from '../../service/productservice';
 import {CommonModule, NgClass} from '@angular/common';
 
 @Component({
@@ -11,8 +9,6 @@ import {CommonModule, NgClass} from '@angular/common';
   imports: [
     CommonModule,
     DataView,
-    Button,
-    Tag,
     NgClass
   ],
   templateUrl: './compact-list.component.html',

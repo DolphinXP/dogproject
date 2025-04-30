@@ -1,15 +1,7 @@
 <div class="flex flex-col h-dvh">
-  <div class="flex flex-1 w-dvw top-0 z-10">
-    <!-- Left func -->
-    <div class="flex flex-col grow max-w-xl h-full">
-      <img class="w-full object-cover" src="images/map.webp">
-      <app-compact-list class="overflow-auto flex-1"></app-compact-list>
-    </div>
-    <!-- Main Content -->
-    <div class="flex flex-col grow w-full h-full">
-      <app-vis-view class="h-full"></app-vis-view>
-    </div>
+  <div class="h-[calc(100dvh-var(--footer-height))]">
+    <router-outlet class="h-full"/>
   </div>
   <!-- Footer - Always at bottom -->
-  <app-footer class="flex w-dvw items-center h-20 sticky bottom-0 z-10 bg-black"></app-footer>
+  <app-footer class="flex w-dvw items-center sticky bottom-0 z-10 m-0 bg-black h-[var(--footer-height)]"></app-footer>
 </div>

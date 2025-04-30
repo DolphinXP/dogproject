@@ -10,14 +10,14 @@ import aiohttp_cors
 from aiohttp import web
 
 # Import your classes
-from frame_processor import FrameProcessor
+from ir_processor import IRProcessor
 from webrtc_server import WebRTCServer
 
-logger = logging.getLogger("video_server")
+logger = logging.getLogger("ir_main")
 
 # Global video server instance
 webrtc_server = None
-double_fake_camera = None
+ir_processor = None
 
 
 async def index(request):
@@ -62,17 +62,17 @@ async def offer(request):
 
 async def camera_control(request):
     """Handle camera control commands"""
-    global double_fake_camera
+    global ir_processor
 
     try:
         params = await request.json()
         command = params.get("command")
 
         if command == "start":
-            double_fake_camera.start()
+            ir_processor.start()
             return web.Response(text="Camera started")
         elif command == "stop":
-            double_fake_camera.stop()
+            ir_processor.stop()
             return web.Response(text="Camera stopped")
         else:
             return web.Response(status=400, text="Invalid command")
@@ -93,29 +93,24 @@ async def connection_status(request):
 
 async def on_shutdown(app):
     """Close all resources on shutdown"""
-    global webrtc_server, double_fake_camera
+    global webrtc_server, ir_processor
 
     logger.info("Shutting down server")
     if webrtc_server:
         await webrtc_server.close_all_connections()
 
-    if double_fake_camera:
-        double_fake_camera.stop()
+    if ir_processor:
+        ir_processor.stop()
 
 
-def main():
-    global webrtc_server, double_fake_camera
+def ir_main(video, host='0.0.0.0', port=8082, verbose=False):
+    global webrtc_server, ir_processor
 
-    parser = argparse.ArgumentParser(description="WebRTC video streaming server")
-    parser.add_argument("--video", type=str, required=True, help="Path to video file")
-    parser.add_argument("--host", default="0.0.0.0", help="Host to bind")
-    parser.add_argument("--port", type=int, default=8080, help="Port to bind")
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose logging")
-    args = parser.parse_args()
+
 
     # Set up logging
     logging.basicConfig(
-        level=logging.DEBUG if args.verbose else logging.INFO,
+        level=logging.DEBUG if verbose else logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
 
@@ -124,11 +119,11 @@ def main():
     logger.info(f"Created WebRTCServer")
 
     # Initialize camera with video file
-    double_fake_camera = FrameProcessor(fps=30)
-    double_fake_camera.set_camera_param(args.video)
-    logger.info(f"FakeCamera created for {args.video}")
-    double_fake_camera.set_frame_callback(webrtc_server.set_frame)
-    double_fake_camera.start()
+    ir_processor = IRProcessor(fps=30)
+    ir_processor.set_camera_param(video)
+    logger.info(f"FakeCamera created for {video}")
+    ir_processor.set_frame_callback(webrtc_server.set_frame)
+    ir_processor.start()
 
     # Create web application
     app = web.Application()
@@ -153,9 +148,9 @@ def main():
         cors.add(route)
 
     # Run the application
-    logger.info(f"Starting WebRTC server on {args.host}:{args.port}")
-    web.run_app(app, host=args.host, port=args.port, access_log=logger)
+    logger.info(f"Starting WebRTC server on {host}:{port}")
+    web.run_app(app, host=host, port=port, access_log=logger)
 
 
 if __name__ == "__main__":
-    main()
+    ir_main()

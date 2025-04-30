@@ -1,19 +1,15 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {Button} from 'primeng/button';
+import {ElementRef, Injectable} from '@angular/core';
 
-@Component({
-  selector: 'app-vis-view',
-  imports: [
-    Button
-  ],
-  templateUrl: './vis-view.component.html',
-  styleUrl: './vis-view.component.css'
+@Injectable({
+  providedIn: 'root'
 })
-export class VisViewComponent implements OnInit, OnDestroy {
-  @ViewChild('statusIndicator') statusIndicator!: ElementRef;
-  @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
-  @ViewChild('videoInfo') videoInfo!: ElementRef;
-  @ViewChild('logElement') logElement!: ElementRef;
+export class VisService {
+  serviceUrl = 'http://31.41.59.100:8081';
+
+  videoElement: ElementRef<HTMLVideoElement> | null = null;
+  logElement: ElementRef | null = null;
+  statusIndicator: ElementRef | null = null;
+  videoInfo: ElementRef | null = null;
 
   peerConnection: RTCPeerConnection | null = null;
   pcId: string | null = null;
@@ -21,13 +17,12 @@ export class VisViewComponent implements OnInit, OnDestroy {
   statsInterval: any = null;
   isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-  ngOnInit() {
-    this.updateStatus('Not connected');
-    this.log(`页面已加载。设备: ${this.isMobile ? 'Mobile' : 'Desktop'}。点击“Connect to Stream”开始。`);
+  constructor() {
+    console.log(`VisService initialized, mobile: ${this.isMobile}`);
   }
 
-  ngOnDestroy() {
-    this.closeConnection();
+  setServiceUrl(url: string) {
+    this.serviceUrl = url;
   }
 
   updateStatus(status: string) {
@@ -49,7 +44,11 @@ export class VisViewComponent implements OnInit, OnDestroy {
     }
   }
 
-  async connectToStream() {
+  async connectToStream(): Promise<{
+    success: boolean;
+    error?: string | null;
+    pcId?: string | null;
+  }> {
     try {
       this.updateStatus('Connecting...');
       this.log(`创建 peer connection (mobile: ${this.isMobile})...`);
@@ -79,7 +78,7 @@ export class VisViewComponent implements OnInit, OnDestroy {
       await this.peerConnection.setLocalDescription(offer);
       this.log('本地描述已设置，发送 offer 到服务器...');
 
-      const response = await fetch('http://31.41.59.100:8080/offer', {
+      const response = await fetch(`${this.serviceUrl}/offer`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -107,10 +106,37 @@ export class VisViewComponent implements OnInit, OnDestroy {
 
       this.updateStatus('Waiting for media...');
       this.startStatsLogging();
+
+      // 返回连接成功及相关数据
+      return {
+        success: true,
+        error: null,
+        pcId: this.pcId
+      };
     } catch (error: any) {
       this.log(`连接错误: ${error.message}`);
       this.updateStatus(`Error: ${error.message}`);
       this.closeConnection();
+      return {
+        success: false,
+        error: error.message,
+        pcId: null
+      };
+    }
+  }
+
+  reinitializeStream() {
+    // Check if we already have stream-related data in the service
+    if (this.videoElement && this.mediaStream) {
+      // Reattach the existing stream to the video element
+      this.videoElement.nativeElement.srcObject = this.mediaStream;
+
+      // Make sure autoplay is enabled
+      this.videoElement.nativeElement.autoplay = true;
+
+
+    } else if (this.videoElement && !this.mediaStream) {
+      // this.connectToStream();
     }
   }
 
@@ -142,13 +168,15 @@ export class VisViewComponent implements OnInit, OnDestroy {
     this.log(`收到 track: ${event.track.kind}, id=${event.track.id}, enabled=${event.track.enabled}`);
     if (event.track.kind === 'video') {
       this.mediaStream = event.streams[0] || new MediaStream([event.track]);
-      this.videoElement.nativeElement.srcObject = this.mediaStream;
-      this.log(`设置视频流: tracks=${this.mediaStream.getTracks().length}, active=${this.mediaStream.active}`);
-      this.videoElement.nativeElement.onloadedmetadata = () => {
-        this.videoInfo.nativeElement.textContent = `分辨率: ${this.videoElement.nativeElement.videoWidth}x${this.videoElement.nativeElement.videoHeight}`;
-        this.log(`视频尺寸: ${this.videoElement.nativeElement.videoWidth}x${this.videoElement.nativeElement.videoHeight}`);
-        this.updateStatus('Streaming');
-      };
+
+      if (this.videoElement) {
+        this.videoElement.nativeElement.srcObject = this.mediaStream;
+        this.log(`设置视频流: tracks=${this.mediaStream.getTracks().length}, active=${this.mediaStream.active}`);
+        this.videoElement.nativeElement.onloadedmetadata = () => {
+          this.log(`视频尺寸: ${this.videoElement!.nativeElement.videoWidth}x${this.videoElement!.nativeElement.videoHeight}`);
+          this.updateStatus('Streaming');
+        };
+      }
     }
   }
 
@@ -192,7 +220,7 @@ export class VisViewComponent implements OnInit, OnDestroy {
   }
 
   async startCamera() {
-    await fetch('http://31.41.59.100:8080/camera_control', {
+    await fetch(`${this.serviceUrl}/camera_control`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({command: 'start'})
@@ -200,25 +228,11 @@ export class VisViewComponent implements OnInit, OnDestroy {
   }
 
   async stopCamera() {
-    await fetch('http://31.41.59.100:8080/camera_control', {
+    await fetch(`${this.serviceUrl}/camera_control`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({command: 'stop'})
     });
   }
 
-
-  preventPause(event: MouseEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    // 立即播放，防止暂停
-    const video = event.target as HTMLVideoElement;
-    if (video.paused) {
-      video.play();
-    }
-  }
-
-  disableContextMenu(event: MouseEvent) {
-    event.preventDefault();
-  }
 }

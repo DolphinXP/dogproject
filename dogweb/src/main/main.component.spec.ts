@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CompactListComponent } from './compact-list.component';
+import { MainComponent } from './main.component';
 
-describe('CompactListComponent', () => {
-  let component: CompactListComponent;
-  let fixture: ComponentFixture<CompactListComponent>;
+describe('MainComponent', () => {
+  let component: MainComponent;
+  let fixture: ComponentFixture<MainComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CompactListComponent]
+      imports: [MainComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CompactListComponent);
+    fixture = TestBed.createComponent(MainComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

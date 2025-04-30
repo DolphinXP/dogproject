@@ -3,13 +3,13 @@ import threading
 import time
 import logging
 
-logger = logging.getLogger("fakecamera")
+logger = logging.getLogger("ir_fake_camera")
 
 
-class FakeCamera():
+class IRFakeCamera:
 
     def __init__(self, fps=30):
-        super(FakeCamera, self).__init__()
+        super(IRFakeCamera, self).__init__()
         self.name = ""
         self.video_path = None
         self.fps = fps

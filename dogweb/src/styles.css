@@ -2,8 +2,11 @@
 @import "tailwindcss";
 @import "primeicons/primeicons.css";
 
-html, body, #app-root {
-  height: 100%;
+html, body {
   margin: 0;
   padding: 0;
+}
+
+:root {
+  --footer-height: 5rem;
 }

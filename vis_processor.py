@@ -1,14 +1,14 @@
 import numpy as np
 
-from fake_camera import FakeCamera
+from vis_fake_camera import VisFakeCamera
 import time
 import cv2
 import threading
 import logging
 
-logger = logging.getLogger("frameprocessor")
+logger = logging.getLogger("vis_processor")
 
-class FrameProcessor:
+class VisProcessor:
     """
     A class that simulates a camera by generating a test pattern and
     allows for double buffering of frames.
@@ -20,8 +20,8 @@ class FrameProcessor:
         self._frame_count = 0
         self._start_time = time.time()
         self._last_log_time = 0
-        self._left_camera = FakeCamera()
-        self._right_camera = FakeCamera()
+        self._left_camera = VisFakeCamera()
+        self._right_camera = VisFakeCamera()
         self.callback = None
         self._thread = None
 
@@ -51,13 +51,13 @@ class FrameProcessor:
         self._thread = threading.Thread(target=self._process_frames, daemon=True)
         self._thread.start()
 
-        logger.info("DoubleFakeCamera started")
+        logger.info("Processor started")
 
     def stop(self):
         """
         Stop the double fake camera.
         """
-        logger.info("Stopping DoubleFakeCamera")
+        logger.info("Stopping processor")
 
         self._stop = True
         self._left_camera.stop()

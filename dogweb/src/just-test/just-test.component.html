@@ -1,31 +1,27 @@
+<div class="flex w-dvw h-dvh">
 
-<div class="container">
-  <h1>WebRTC Video Stream</h1>
-
-  <div>
-    <div id="statusIndicator" #statusIndicator>Status: Not connected</div>
-    <div class="controls">
-      <button pButton type="button" label="Connect to Stream" (click)="connectToStream()"></button>
-      <button pButton type="button" label="Start Camera" (click)="startCamera()"></button>
-      <button pButton type="button" label="Stop Camera" (click)="stopCamera()"></button>
-      <button pButton type="button" label="Close Connection" (click)="closeConnection()"></button>
+  <div #leftBar class="flex flex-col min-w-md max-w-md bg-amber-300" id="leftBar">
+    <div class="w-full min-h-[800px] bg-gray-300 p-4">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus eos explicabo facere ipsam
+      ipsum nam optio praesentium quae ratione sit? Distinctio eius possimus provident rerum voluptas. Amet explicabo
+      illum quos?
+    </div>
+    <div class="overflow-auto">
+      <ul class="list-none">
+        <li class="flex justify-between w-full p-4">1</li>
+        <li class="flex justify-between w-full p-4">2</li>
+        <li class="flex justify-between w-full p-4">3</li>
+        <li class="flex justify-between w-full p-4">4</li>
+        <li class="flex justify-between w-full p-4">5</li>
+      </ul>
     </div>
   </div>
+  <div class="flex grow">
 
-  <div>
-    <h2>Video Stream:</h2>
-    <div id="videoContainer">
-      <video id="videoElement" #videoElement  autoplay playsinline controls></video>
-      <div id="videoInfo" #videoInfo></div>
-    </div>
+    <p-button (click)="toggleLeftBar()" label="Open"></p-button>
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet consequatur, dolore eligendi esse
+    laborum maiores placeat tenetur. Atque dolorum eius enim, expedita minima molestiae non odio officiis veniam
+    veritatis. Unde.
+
   </div>
-
-  <h3>Log:</h3>
-  <div id="log" #logElement></div>
 </div>
-<div class="card flex justify-center">
-  <p-button label="Check" />
-</div>
-<h1 class="text-3xl font-bold underline">
-  Hello world!
-</h1>
