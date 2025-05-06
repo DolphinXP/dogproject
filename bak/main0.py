@@ -1,18 +1,17 @@
 import argparse
 import asyncio
+import fractions
 import json
 import logging
 import os
-import ssl
-import uuid
 import time
-import fractions
+import uuid
 
 import cv2
 import numpy as np
 from aiohttp import web
 from aiortc import MediaStreamTrack, RTCPeerConnection, RTCSessionDescription, RTCConfiguration, RTCIceServer
-from aiortc.contrib.media import MediaRelay, MediaBlackhole
+from aiortc.contrib.media import MediaRelay
 from av import VideoFrame
 
 logger = logging.getLogger("video_server")
@@ -151,7 +150,7 @@ async def offer(request):
         params = await request.json()
         offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
 
-        pc_id = params.get("pc_id", str(uuid.uuid4()))
+        pcId = params.get("pcId", str(uuid.uuid4()))
 
         # Set up ICE servers for better NAT traversal
         ice_servers = [
@@ -161,7 +160,7 @@ async def offer(request):
 
         # Create a new RTCPeerConnection with ICE servers
         pc = RTCPeerConnection(RTCConfiguration(iceServers=ice_servers))
-        peer_connections[pc_id] = pc
+        peer_connections[pcId] = pc
 
         # Get the video file path from command line arguments
         video_file = request.app["video_file"]
@@ -172,8 +171,8 @@ async def offer(request):
             if pc.connectionState == "failed" or pc.connectionState == "closed":
                 # Clean up
                 await pc.close()
-                if pc_id in peer_connections:
-                    del peer_connections[pc_id]
+                if pcId in peer_connections:
+                    del peer_connections[pcId]
 
         # Create the video track from the file
         video_track = VideoFileTrack(video_file)
@@ -184,12 +183,12 @@ async def offer(request):
         logger.info(f"Added track to peer connection")
 
         # Close old peer connections
-        for old_pc_id in list(peer_connections.keys()):
-            if old_pc_id != pc_id:
-                logger.info(f"Closing old peer connection: {old_pc_id}")
-                old_pc = peer_connections[old_pc_id]
+        for old_pcId in list(peer_connections.keys()):
+            if old_pcId != pcId:
+                logger.info(f"Closing old peer connection: {old_pcId}")
+                old_pc = peer_connections[old_pcId]
                 await old_pc.close()
-                del peer_connections[old_pc_id]
+                del peer_connections[old_pcId]
 
         # Set the remote description
         await pc.setRemoteDescription(offer)
@@ -242,7 +241,7 @@ async def offer(request):
             text=json.dumps({
                 "sdp": pc.localDescription.sdp,
                 "type": pc.localDescription.type,
-                "pc_id": pc_id,
+                "pcId": pcId,
             })
         )
     except Exception as e:

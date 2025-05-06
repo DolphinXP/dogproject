@@ -18,15 +18,19 @@ ir_processor = None
 async def offer(request):
     """Handle WebRTC offer from browser client"""
     global webrtc_server
+    global ir_processor
 
     try:
         params = await request.json()
+
+        taskInfo = params["taskInfo"]
+        ir_processor.set_task_info(taskInfo)
 
         # Process the offer using WebRTCServer class
         response = await webrtc_server.process_offer(
             sdp=params["sdp"],
             type_=params["type"],
-            pc_id=params.get("pc_id")
+            pcId=params.get("pcId")
         )
 
         return web.Response(

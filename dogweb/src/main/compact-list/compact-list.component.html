@@ -1,29 +1,27 @@
-<p-dataView #dv [value]="products()">
+<p-dataView #dv [value]="detects()">
   <ng-template #list let-items>
-    <div class="grid grid-cols-12 gap-4 grid-nogutter">
-      <div *ngFor="let item of items; let first = first" class="col-span-12">
+    <div class="grid grid-nogutter">
+      <div *ngFor="let item of items; let first = first">
         <div
+          (click)="onItemClick(item)"
           [ngClass]="{ 'border-t border-gray-200': !first }"
-          class="flex flex-col sm:flex-row sm:items-center p-4 gap-4"
+          class="flex flex-col sm:flex-row sm:items-center p-4 gap-4 cursor-pointer hover:bg-gray-100"
         >
-          <div class="md:w-40 relative">
+          <div class="md:w-20 relative">
             <img
               [alt]="item.name"
-              [src]="'https://primefaces.org/cdn/primeng/images/demo/product/' + item.image"
+              [src]=" 'https://picsum.photos/64' "
               class="block xl:block mx-auto rounded-border w-full"
             />
 
           </div>
-          <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
-            <div class="flex flex-row md:flex-col justify-between items-start gap-2">
-              <div class="text-lg font-medium text-surface-900 dark:text-surface-0 mt-2">{{ item.name }}</div>
-
+          <div class="flex flex-col md:flex-row justify-between flex-1 gap-2">
+            <div class="flex flex-row md:flex-col justify-between items-start">
+              <div class="font-semibold">{{ item.name }}</div>
             </div>
-            <div class="flex flex-col md:items-end gap-8">
-                            <span class="text-xl font-semibold text-surface-900 dark:text-surface-0">{{
-                                '$' + item.price
-                              }}</span>
 
+            <div class="flex flex-col ">
+              <span class="">{{ item.size }}</span>
             </div>
           </div>
         </div>
@@ -31,3 +29,6 @@
     </div>
   </ng-template>
 </p-dataView>
+
+
+<app-preview-dialog></app-preview-dialog>

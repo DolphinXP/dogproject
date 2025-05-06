@@ -97,8 +97,8 @@ async function connectToStream() {
             body: JSON.stringify({
                 sdp: peerConnection.localDescription.sdp,
                 type: peerConnection.localDescription.type,
-                pc_id: pcId,
-                is_mobile: isMobile
+                pcId: pcId,
+                isMobile: isMobile
             })
         });
 
@@ -109,7 +109,7 @@ async function connectToStream() {
 
         // Process server response
         const answer = await response.json();
-        pcId = answer.pc_id;
+        pcId = answer.pcId;
 
         log(`Received answer from server (PC ID: ${pcId})`);
 

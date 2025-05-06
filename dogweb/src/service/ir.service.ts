@@ -1,4 +1,5 @@
 import {ElementRef, Injectable} from '@angular/core';
+import {TaskInfo} from '../domain/task-info';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +45,7 @@ export class IrService {
     }
   }
 
-  async connectToStream(): Promise<{
+  async connectToStream(taskInfo: TaskInfo): Promise<{
     success: boolean;
     error?: string | null;
     pcId?: string | null;
@@ -84,8 +85,9 @@ export class IrService {
         body: JSON.stringify({
           sdp: this.peerConnection.localDescription!.sdp,
           type: this.peerConnection.localDescription!.type,
-          pc_id: this.pcId,
-          is_mobile: this.isMobile
+          pcId: this.pcId,
+          taskInfo: taskInfo,
+          isMobile: this.isMobile
         })
       });
 
@@ -95,7 +97,7 @@ export class IrService {
       }
 
       const answer = await response.json();
-      this.pcId = answer.pc_id;
+      this.pcId = answer.pcId;
       this.log(`收到服务器应答 (PC ID: ${this.pcId})`);
 
       await this.peerConnection.setRemoteDescription(new RTCSessionDescription({

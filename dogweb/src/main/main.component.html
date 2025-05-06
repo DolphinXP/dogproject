@@ -1,5 +1,5 @@
 <div
-  class="flex grow w-dvw top-0 z-10 p-2 gap-2 h-full bg-[url('/images/main-bg.jpg')] bg-cover bg-center bg-no-repeat">
+  class="flex grow w-dvw top-0 z-10 p-2 gap-2 h-full bg-[url('/images/bg-1.jpg')] bg-cover bg-center bg-no-repeat">
 
   <!-- Left panel -->
   <div class="flex flex-col h-full min-w-md max-w-md max-h-full m-2">
@@ -10,8 +10,8 @@
   <!-- Main Content -->
   <div class="flex flex-col w-full h-full relative">
     <div class="flex justify-between items-center w-full text-white gap-2 p-2">
-      <div class="flex items-center text-xs  text-gray-300 flex-none">
-        CPU: {{ cpuUsage }}% / Memory: {{ memoryUsage }}% / Disk: {{ diskUsage }}%
+      <div class="flex items-center text-sm  text-gray-300 drop-shadow flex-none">
+        Remote CPU: {{ cpuUsage }}% / Memory: {{ memoryUsage }}% / Disk: {{ diskUsage }}%
       </div>
 
       <div class="font-bold text-3xl">{{ viewName }}</div>

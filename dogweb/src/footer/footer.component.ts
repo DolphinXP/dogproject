@@ -23,6 +23,7 @@ export class FooterComponent {
   @ViewChild('startStreamButton') startStreamButton!: ElementRef;
   @ViewChild(NewTaskDialogComponent) newTaskDialog!: NewTaskDialogComponent;
 
+
   private router = inject(Router);
   private visService = inject(VisService);
   private irService = inject(IrService);
@@ -45,19 +46,24 @@ export class FooterComponent {
   onNewTaskConfirmed(taskInfo: TaskInfo) {
     console.log(taskInfo);
 
+    this.msgService.add({severity: 'secondary', summary: '信息', detail: '正在连接...', sticky: true});
+
     this.enableStartStreamButton(false);
-    this.visService.connectToStream().then(value => {
+    this.visService.connectToStream(taskInfo).then(value => {
       if (value && !value.success) {
         this.msgService.add({severity: 'error', summary: 'Error', detail: '连接失败，请检查网络或服务器状态'});
         this.enableStartStreamButton(true);
       }
-    });
-    this.irService.connectToStream().then(value => {
-      if (value && !value.success) {
-        this.msgService.add({severity: 'error', summary: '错误', detail: '连接失败，请检查网络或服务器状态'});
-        this.enableStartStreamButton(true);
-      }
-    });
+      return this.irService.connectToStream(taskInfo);
+    }).then(
+      value => {
+        if (value && !value.success) {
+          this.msgService.add({severity: 'error', summary: '错误', detail: '连接失败，请检查网络或服务器状态'});
+          this.enableStartStreamButton(true);
+        }
+
+        this.msgService.clear();
+      });
 
   }
 

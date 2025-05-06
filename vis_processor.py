@@ -1,12 +1,14 @@
+import logging
+import threading
+import time
+
+import cv2
 import numpy as np
 
 from vis_fake_camera import VisFakeCamera
-import time
-import cv2
-import threading
-import logging
 
 logger = logging.getLogger("vis_processor")
+
 
 class VisProcessor:
     """
@@ -24,6 +26,10 @@ class VisProcessor:
         self._right_camera = VisFakeCamera()
         self.callback = None
         self._thread = None
+        self.task_info = None
+
+    def set_task_info(self, task_info):
+        self.task_info = task_info
 
     def set_camera_param(self, param):
         """
@@ -66,7 +72,6 @@ class VisProcessor:
         if self._thread and self._thread.is_alive():
             self._thread.join(timeout=1.0)
             self._thread = None
-
 
     def _process_frames(self):
         """
@@ -117,7 +122,6 @@ class VisProcessor:
                 self.callback(emergency_frame)
                 logger.error("Emergency frame sent")
 
-
     def _combine_frames(self, left_frame, right_frame):
         """
         Combine the frames from the left and right cameras.
@@ -139,9 +143,7 @@ class VisProcessor:
         # Add opacity to the cropped right frame
         # cropped_right_frame = cv2.addWeighted(cropped_right_frame, 0.5, cropped_right_frame, 0, 0)
 
-
         # Concatenate the left frame and the cropped right frame
         combined_frame = cv2.hconcat([left_frame, cropped_right_frame])
-
 
         return combined_frame

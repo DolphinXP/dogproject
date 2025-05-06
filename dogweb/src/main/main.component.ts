@@ -6,7 +6,6 @@ import {NgClass} from '@angular/common';
 import {MainService} from '../service/main.service';
 import {VisService} from '../service/vis.service';
 import {IrService} from '../service/ir.service';
-import {Toast} from 'primeng/toast';
 import {MessageService} from 'primeng/api';
 import {ResourceUsage} from '../domain/resource-usage';
 
@@ -16,8 +15,7 @@ import {ResourceUsage} from '../domain/resource-usage';
     SidePanelComponent,
     ViewVisComponent,
     ViewIrComponent,
-    NgClass,
-    Toast
+    NgClass
   ],
   providers: [MessageService],
   templateUrl: './main.component.html',
@@ -41,7 +39,7 @@ export class MainComponent {
 
   ngOnInit() {
     this.mainService.resourceUsageWebSocket((data: ResourceUsage) => {
-      console.log('Received resource usage data:', data);
+      // console.log('Received resource usage data:', data);
 
       this.diskUsage = data.disk;
       this.cpuUsage = data.cpu;

@@ -1,12 +1,13 @@
 import asyncio
 import fractions
 import logging
+import threading
 import time
 import uuid
-from typing import Dict, Optional, List
-import numpy as np
+from typing import Dict, Optional
+
 import cv2
-import threading
+import numpy as np
 from aiortc import MediaStreamTrack, RTCPeerConnection, RTCSessionDescription, RTCConfiguration, RTCIceServer
 from aiortc.contrib.media import MediaRelay
 from av import VideoFrame
@@ -30,7 +31,6 @@ class VideoSource:
         self.allow_new_frame = True
         self._last_frame_time = time.time()
         self._frame_count = 0
-
 
     def get_test_frame(self):
         """获取测试图案"""
@@ -65,15 +65,12 @@ class VideoSource:
                 logger.error("Frame is None or empty, using test pattern")
                 frame = self.get_test_frame()
 
-
         # add datetime to left-bottom corner
         time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         cv2.putText(frame, time_str, (10, frame.shape[0] - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1)
 
         return frame, self._frame_count
-
-
 
 
 class VideoStreamTrack(MediaStreamTrack):
@@ -112,7 +109,6 @@ class VideoStreamTrack(MediaStreamTrack):
                 fps = self._frame_count / elapsed if elapsed > 0 else 0
                 logger.info(f"Track processing frame {self._frame_count}, FPS: {fps:.2f}")
                 self._last_log_time = current_time
-
 
             # 创建VideoFrame
             video_frame = VideoFrame.from_ndarray(frame, format="rgb24")
@@ -158,67 +154,65 @@ class WebRTCServer:
             RTCIceServer(urls="stun:stun1.l.google.com:19302"),
         ]
 
-
-
         logger.info("WebRTCServer initialized")
 
     def set_frame(self, frame):
         """处理来自摄像头源的输入帧"""
         self.video_source.set_frame(frame)
 
-    async def process_offer(self, sdp: str, type_: str, pc_id: Optional[str] = None) -> dict:
+    async def process_offer(self, sdp: str, type_: str, pcId: Optional[str] = None) -> dict:
         """
         处理传入的WebRTC提议并创建应答
 
         Args:
             sdp: 会话描述协议
             type_: 提议类型
-            pc_id: 对等连接ID（可选）
+            pcId: 对等连接ID（可选）
 
         Returns:
-            包含SDP应答、类型和pc_id的字典
+            包含SDP应答、类型和pcId的字典
         """
         try:
             # 解析提议
             offer = RTCSessionDescription(sdp=sdp, type=type_)
 
             # 如果未提供PC ID，则生成
-            if pc_id is None or pc_id not in self.peer_connections:
-                pc_id = str(uuid.uuid4())
-                logger.info(f"Creating new peer connection with ID: {pc_id}")
+            if pcId is None or pcId not in self.peer_connections:
+                pcId = str(uuid.uuid4())
+                logger.info(f"Creating new peer connection with ID: {pcId}")
             else:
-                logger.info(f"Using existing peer connection with ID: {pc_id}")
+                logger.info(f"Using existing peer connection with ID: {pcId}")
                 # 如果重用，关闭现有连接
-                await self.close_connection(pc_id)
+                await self.close_connection(pcId)
                 # 添加短暂延迟确保资源释放
                 await asyncio.sleep(0.1)
 
             # 创建新的RTCPeerConnection
             rtc_config = RTCConfiguration(iceServers=self.ice_servers)
             pc = RTCPeerConnection(rtc_config)
-            self.peer_connections[pc_id] = pc
+            self.peer_connections[pcId] = pc
 
             # 设置连接状态变更处理程序
             @pc.on("connectionstatechange")
             async def on_connectionstatechange():
-                logger.info(f"Connection {pc_id} state is {pc.connectionState}")
+                logger.info(f"Connection {pcId} state is {pc.connectionState}")
                 if pc.connectionState == "failed" or pc.connectionState == "closed":
-                    logger.info(f"Closing peer connection {pc_id} due to {pc.connectionState} state")
-                    await self.close_connection(pc_id)
+                    logger.info(f"Closing peer connection {pcId} due to {pc.connectionState} state")
+                    await self.close_connection(pcId)
 
             # 为此连接创建新的视频轨道
             track = VideoStreamTrack(self.video_source)
-            self.tracks[pc_id] = track
+            self.tracks[pcId] = track
 
             # 添加轨道到对等连接
             # 使用relay为每个客户端创建独立轨道副本
             relayed_track = self.relay.subscribe(track)
             sender = pc.addTrack(relayed_track)
-            logger.info(f"Added track to peer connection {pc_id}")
+            logger.info(f"Added track to peer connection {pcId}")
 
             # 设置远程描述
             await pc.setRemoteDescription(offer)
-            logger.info(f"Set remote description for {pc_id}")
+            logger.info(f"Set remote description for {pcId}")
 
             # 创建应答
             try:
@@ -233,19 +227,19 @@ class WebRTCServer:
                         transceiver._direction = "sendonly"
 
                 await pc.setLocalDescription(answer)
-                logger.info(f"Created and set local description (answer) for {pc_id}")
+                logger.info(f"Created and set local description (answer) for {pcId}")
 
             except Exception as e:
-                logger.error(f"Error creating answer for {pc_id}: {str(e)}")
+                logger.error(f"Error creating answer for {pcId}: {str(e)}")
                 # 尝试回退 - 手动创建最小应答
                 if hasattr(pc, "_createAnswer"):
                     try:
                         sdp = await pc._createAnswer()
                         answer = RTCSessionDescription(sdp=sdp, type="answer")
                         await pc.setLocalDescription(answer)
-                        logger.info(f"Created and set manual answer as fallback for {pc_id}")
+                        logger.info(f"Created and set manual answer as fallback for {pcId}")
                     except Exception as e2:
-                        logger.error(f"Fallback also failed for {pc_id}: {str(e2)}")
+                        logger.error(f"Fallback also failed for {pcId}: {str(e2)}")
                         raise RuntimeError(f"Failed to create answer: {str(e)}, fallback also failed: {str(e2)}")
                 else:
                     raise RuntimeError(f"Failed to create answer: {str(e)}")
@@ -254,7 +248,7 @@ class WebRTCServer:
             return {
                 "sdp": pc.localDescription.sdp,
                 "type": pc.localDescription.type,
-                "pc_id": pc_id,
+                "pcId": pcId,
             }
 
         except Exception as e:
@@ -267,16 +261,16 @@ class WebRTCServer:
         """返回活动连接数"""
         return len(self.peer_connections)
 
-    async def close_connection(self, pc_id: str):
+    async def close_connection(self, pcId: str):
         """关闭特定对等连接"""
-        if pc_id in self.peer_connections:
-            pc = self.peer_connections.pop(pc_id)
-            logger.info(f"Closing peer connection {pc_id}")
+        if pcId in self.peer_connections:
+            pc = self.peer_connections.pop(pcId)
+            logger.info(f"Closing peer connection {pcId}")
             await pc.close()
 
             # 停止并清理相应的轨道
-            if pc_id in self.tracks:
-                track = self.tracks.pop(pc_id)
+            if pcId in self.tracks:
+                track = self.tracks.pop(pcId)
                 track.stop()
 
             return True
@@ -296,5 +290,3 @@ class WebRTCServer:
 
         self.peer_connections.clear()
         self.tracks.clear()
-
-

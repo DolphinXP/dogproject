@@ -1,44 +1,37 @@
-import {Component, inject, signal} from '@angular/core';
+import {Component, inject, signal, ViewChild} from '@angular/core';
 import {DataView} from 'primeng/dataview';
-import {Product} from '../../domain/product';
-import {ProductService} from '../../service/productservice';
 import {CommonModule, NgClass} from '@angular/common';
+import {MainService} from '../../service/main.service';
+import {DetectInfo} from '../../domain/detect-info';
+import {PreviewDialogComponent} from '../preview-dialog/preview-dialog.component';
 
 @Component({
   selector: 'app-compact-list',
   imports: [
     CommonModule,
     DataView,
-    NgClass
+    NgClass,
+    PreviewDialogComponent
   ],
   templateUrl: './compact-list.component.html',
   styleUrl: './compact-list.component.css'
 })
 export class CompactListComponent {
-  products = signal<any>([]);
+  @ViewChild(PreviewDialogComponent) previewDialog!: PreviewDialogComponent;
 
-  productService = inject(ProductService);
+  detects = signal<DetectInfo[]>([]);
+  mainService = inject(MainService);
 
   ngOnInit() {
-    this.productService.getProducts().then((data) => {
-      const d = data.slice(0, 5);
-      this.products.set([...d])
+    this.mainService.detectedCompactWebSocket((data: DetectInfo[]) => {
+      // console.log('Received data:', data);
+      this.detects.set(data);
+
     });
   }
 
-  getSeverity(product: Product) {
-    switch (product.inventoryStatus) {
-      case 'INSTOCK':
-        return 'success';
-
-      case 'LOWSTOCK':
-        return 'warn';
-
-      case 'OUTOFSTOCK':
-        return 'danger';
-
-      default:
-        return null;
-    }
+  onItemClick(item: DetectInfo) {
+    console.log('Item clicked:', item);
+    this.previewDialog.showDialog(item)
   }
 }
