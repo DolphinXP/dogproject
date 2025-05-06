@@ -1,0 +1,23 @@
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '25rem' }" header="新建任务">
+  <!--  <span class="p-text-secondary block mb-8">Update your information.</span>-->
+  <form [formGroup]="formGroup">
+    <div class="flex items-center gap-4 mb-4">
+      <label class="font-semibold w-24" for="taskId">任务序号*</label>
+      <input autocomplete="off" class="flex-auto" formControlName="taskId" id="taskId" pInputText/>
+
+    </div>
+    <div class="flex items-center gap-4 mb-8">
+      <label class="font-semibold w-24" for="operator">操作人员</label>
+      <input autocomplete="off" class="flex-auto" formControlName="operator" id="operator" pInputText/>
+    </div>
+    <div class="flex justify-end gap-2">
+      <p-button (click)="cancelTask()" label="取消" severity="secondary"/>
+      <p-button (click)="createTask()" label="确定"/>
+    </div>
+    @if (formGroup.invalid && formGroup.touched) {
+      <div class="text-red-500  mt-2 text-right">
+        请填写所有必填项
+      </div>
+    }
+  </form>
+</p-dialog>
