@@ -1,15 +1,10 @@
-import argparse
-import asyncio
 import json
 import logging
-import os
-import sys
-
 import traceback
+
 import aiohttp_cors
 from aiohttp import web
 
-# Import your classes
 from vis_processor import VisProcessor
 from webrtc_server import WebRTCServer
 
@@ -18,20 +13,6 @@ logger = logging.getLogger("vis_main")
 # Global video server instance
 webrtc_server = None
 vis_processor = None
-
-
-async def index(request):
-    """Serve the HTML page"""
-    with open(os.path.join(os.path.dirname(__file__), "client.html"), "r") as f:
-        content = f.read()
-    return web.Response(content_type="text/html", text=content)
-
-
-async def javascript(request):
-    """Serve the JavaScript file"""
-    with open(os.path.join(os.path.dirname(__file__), "client.js"), "r") as f:
-        content = f.read()
-    return web.Response(content_type="application/javascript", text=content)
 
 
 async def offer(request):
@@ -60,6 +41,7 @@ async def offer(request):
             text=f"Error: {str(e)}"
         )
 
+
 async def camera_control(request):
     """Handle camera control commands"""
     global vis_processor
@@ -79,6 +61,7 @@ async def camera_control(request):
     except Exception as e:
         logger.error(f"Error handling camera control: {str(e)}")
         return web.Response(status=500, text=f"Error: {str(e)}")
+
 
 async def connection_status(request):
     """Return the number of active connections"""
@@ -106,7 +89,6 @@ async def on_shutdown(app):
 def vis_main(video, host='0.0.0.0', port=8081, verbose=False):
     global webrtc_server, vis_processor
 
-
     # Set up logging
     logging.basicConfig(
         level=logging.DEBUG if verbose else logging.INFO,
@@ -129,8 +111,6 @@ def vis_main(video, host='0.0.0.0', port=8081, verbose=False):
     app.on_shutdown.append(on_shutdown)
 
     # Configure routes
-    # app.router.add_get("/", index)
-    # app.router.add_get("/client.js", javascript)
     app.router.add_post("/offer", offer)
     app.router.add_post("/camera_control", camera_control)
     app.router.add_get("/status", connection_status)  # Added a status endpoint
@@ -147,9 +127,9 @@ def vis_main(video, host='0.0.0.0', port=8081, verbose=False):
         cors.add(route)
 
     # Run the application
-    logger.info(f"Starting WebRTC server on {host}:{port}")
+    logger.info(f"Starting VIS WebRTC server on {host}:{port}")
     web.run_app(app, host=host, port=port, access_log=logger)
 
 
 if __name__ == "__main__":
-    vis_main()
+    vis_main(video="")

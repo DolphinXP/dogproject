@@ -4,11 +4,16 @@ import {VisService} from '../service/vis.service';
 import {IrService} from '../service/ir.service';
 import {ConfirmationService, MessageService} from 'primeng/api';
 import {ConfirmDialog} from 'primeng/confirmdialog';
+import {NewTaskDialogComponent} from '../main/new-task-dialog/new-task-dialog.component';
+import {TaskInfo} from '../domain/task-info';
+import {Toast} from 'primeng/toast';
 
 @Component({
   selector: 'app-footer',
   imports: [
-    ConfirmDialog
+    ConfirmDialog,
+    NewTaskDialogComponent,
+    Toast
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './footer.component.html',
@@ -16,6 +21,7 @@ import {ConfirmDialog} from 'primeng/confirmdialog';
 })
 export class FooterComponent {
   @ViewChild('startStreamButton') startStreamButton!: ElementRef;
+  @ViewChild(NewTaskDialogComponent) newTaskDialog!: NewTaskDialogComponent;
 
   private router = inject(Router);
   private visService = inject(VisService);
@@ -33,6 +39,12 @@ export class FooterComponent {
   }
 
   onStartStreamClick() {
+    this.newTaskDialog.showDialog();
+  }
+
+  onNewTaskConfirmed(taskInfo: TaskInfo) {
+    console.log(taskInfo);
+
     this.enableStartStreamButton(false);
     this.visService.connectToStream().then(value => {
       if (value && !value.success) {
@@ -41,8 +53,16 @@ export class FooterComponent {
       }
     });
     this.irService.connectToStream().then(value => {
+      if (value && !value.success) {
+        this.msgService.add({severity: 'error', summary: '错误', detail: '连接失败，请检查网络或服务器状态'});
+        this.enableStartStreamButton(true);
+      }
     });
 
+  }
+
+  onNewTaskCancelled() {
+    this.msgService.add({severity: 'warn', summary: '提示', detail: '新建任务已取消'});
   }
 
   onStopStreamClick(event: Event) {
