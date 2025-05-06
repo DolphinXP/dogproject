@@ -1,0 +1,11 @@
+<p-dialog [(visible)]="visible" [dismissableMask]="true" [modal]="true" class="w-[800px]" header="{{ title }}">
+  <!--  <span class="p-text-secondary block mb-8">Update your information.</span>-->
+  <video #videoPlayer autoplay controls width="100%">
+    <source [src]="videoUrl" type="video/mp4">
+    您的浏览器不支持 video 标签。
+  </video>
+
+  <div class="flex justify-end gap-2 mt-2">
+    <p-button (click)="saveVideo()" label="保存视频"/>
+  </div>
+</p-dialog>
