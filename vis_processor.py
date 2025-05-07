@@ -101,25 +101,6 @@ class VisProcessor:
         self.model = None
         print("Model resources released!")
 
-    def calc_iou(self, box1, box2):
-        # box: [x1, y1, x2, y2]
-        xA = max(box1[0], box2[0])
-        yA = max(box1[1], box2[1])
-        xB = min(box1[2], box2[2])
-        yB = min(box1[3], box2[3])
-        interArea = max(0, xB - xA) * max(0, yB - yA)
-        box1Area = (box1[2] - box1[0]) * (box1[3] - box1[1])
-        box2Area = (box2[2] - box2[0]) * (box2[3] - box2[1])
-        iou = interArea / float(box1Area + box2Area - interArea + 1e-6)
-        return iou
-
-    def center_distance(self, box1, box2):
-        cx1 = (box1[0] + box1[2]) / 2
-        cy1 = (box1[1] + box1[3]) / 2
-        cx2 = (box2[0] + box2[2]) / 2
-        cy2 = (box2[1] + box2[3]) / 2
-        return np.sqrt((cx1 - cx2) ** 2 + (cy1 - cy2) ** 2)
-
     def predict(self, image):
         try:
             if not self.model:
@@ -146,94 +127,22 @@ class VisProcessor:
             predict = predicts[0]
             boxes = predict.boxes
 
-            img_draw = image.copy()
+            # img_draw = image.copy()
+            img_draw = predict.plot()
             detections = []
 
-            hardhat_boxes = []
-            person_boxes = []
-
-            # 分离人和安全帽的检测
             for box in boxes:
+                # Get box coordinates and confidence
+                xyxy = box.xyxy[0].tolist()
+                conf = float(box.conf[0])
                 cls = int(box.cls[0])
-                xyxy = box.xyxy[0].cpu().numpy().astype(int)
-                if cls == 0:  # 安全帽
-                    hardhat_boxes.append(xyxy)
-                elif cls == 5:  # 人
-                    person_boxes.append((xyxy, box))
-
-            # 调试输出
-            # print(f"检测到 {len(hardhat_boxes)} 个安全帽和 {len(person_boxes)} 个人")
-            # 如果安全帽个数大于人，则不进行匹配，比较糙
-            if len(hardhat_boxes) >= len(person_boxes):
-                return img_draw, detections
-
-            # 为每个人检查是否有对应的安全帽
-            for xyxy, box in person_boxes:
-                has_hardhat = False
-                person_height = xyxy[3] - xyxy[1]
-                person_width = xyxy[2] - xyxy[0]
-
-                # 计算人头部区域（大约是上部1/3）
-                head_y_top = xyxy[1]
-                head_y_bottom = xyxy[1] + person_height // 3
-                head_x_left = xyxy[0]
-                head_x_right = xyxy[2]
-
-                # 人的中心点
-                person_cx = (xyxy[0] + xyxy[2]) / 2
-                person_cy = xyxy[1] + person_height // 6  # 假设头部中心在上部1/6处
-
-                # 为每个安全帽计算与人的匹配度
-                for hat_xyxy in hardhat_boxes:
-                    hat_cx = (hat_xyxy[0] + hat_xyxy[2]) / 2
-                    hat_cy = (hat_xyxy[1] + hat_xyxy[3]) / 2
-
-                    # 计算安全帽与人头部的水平距离（相对于人的宽度）
-                    rel_x_dist = abs(hat_cx - person_cx) / person_width
-
-                    # 计算安全帽与人头部的垂直距离（相对于人的高度）
-                    rel_y_dist = abs(hat_cy - person_cy) / person_height
-
-                    # 计算IoU值
-                    iou = self.calc_iou(xyxy, hat_xyxy)
-
-                    # 更宽松的匹配条件：
-                    # 1. 安全帽在人的头部区域附近
-                    # 2. 或者IoU值足够高
-                    # 3. 或者安全帽与人的相对距离足够小
-                    if (head_x_left <= hat_cx <= head_x_right and head_y_top <= hat_cy <= head_y_bottom) or \
-                            (iou > 0.05) or \
-                            (rel_x_dist < 0.5 and rel_y_dist < 0.5):
-                        has_hardhat = True
-                        break
-
-                if has_hardhat:
-                    continue
-
-                # 基于安全帽检测绘制边界框
-                color = (0, 255, 0) if has_hardhat else (255, 0, 0)  # 有安全帽为绿色，没有为红色
-                cv2.rectangle(img_draw, (xyxy[0], xyxy[1]), (xyxy[2], xyxy[3]), color, 2)
-
-                # 添加文本标签
-                label = "Hardhat" if has_hardhat else "No Hardhat"
-                cv2.putText(img_draw, label, (xyxy[0], xyxy[1] - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-
-                # 添加检测信息
                 detection = {
-                    'bbox': box.xyxy[0].tolist(),
+                    'bbox': xyxy,
                     'confidence': float(box.conf[0]),
-                    'class_id': 5,
-                    'class_name': predict.names[5],
-                    'has_hardhat': has_hardhat
+                    'class_id': cls,
+                    'class_name': predict.names[cls]
                 }
                 detections.append(detection)
-
-            # 绘制安全帽边界框
-            # for hat_xyxy in hardhat_boxes:
-            #     cv2.rectangle(img_draw, (hat_xyxy[0], hat_xyxy[1]), (hat_xyxy[2], hat_xyxy[3]), (255, 255, 0), 2)
-            #     cv2.putText(img_draw, "Hardhat", (hat_xyxy[0], hat_xyxy[1] - 10),
-            #                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
 
             return img_draw, detections
 
