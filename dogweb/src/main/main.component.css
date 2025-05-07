@@ -41,7 +41,7 @@
 .sub-view:hover:after {
   content: "点击切换到主视图";
   position: absolute;
-  bottm: 0px;
+  bottom: 0;
   width: 100%;
   text-align: center;
   font-size: 12px;

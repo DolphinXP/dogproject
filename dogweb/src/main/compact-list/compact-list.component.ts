@@ -4,6 +4,7 @@ import {CommonModule, NgClass} from '@angular/common';
 import {MainService} from '../../service/main.service';
 import {DetectInfo} from '../../domain/detect-info';
 import {PreviewDialogComponent} from '../preview-dialog/preview-dialog.component';
+import {PrimeTemplate} from 'primeng/api';
 
 @Component({
   selector: 'app-compact-list',
@@ -11,7 +12,8 @@ import {PreviewDialogComponent} from '../preview-dialog/preview-dialog.component
     CommonModule,
     DataView,
     NgClass,
-    PreviewDialogComponent
+    PreviewDialogComponent,
+    PrimeTemplate
   ],
   templateUrl: './compact-list.component.html',
   styleUrl: './compact-list.component.css'

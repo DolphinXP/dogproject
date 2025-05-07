@@ -46,15 +46,18 @@ export class FooterComponent {
   onNewTaskConfirmed(taskInfo: TaskInfo) {
     console.log(taskInfo);
 
-    this.msgService.add({severity: 'secondary', summary: '信息', detail: '正在连接...', sticky: true});
+    this.msgService.add({severity: 'secondary', summary: 'Info', detail: '正在连接 1 / 2...', sticky: true});
 
     this.enableStartStreamButton(false);
     this.visService.connectToStream(taskInfo).then(value => {
       if (value && !value.success) {
         this.msgService.add({severity: 'error', summary: 'Error', detail: '连接失败，请检查网络或服务器状态'});
         this.enableStartStreamButton(true);
+      } else {
+        this.msgService.add({severity: 'secondary', summary: 'Info', detail: '正在连接 2 / 2...', sticky: true});
+        return this.irService.connectToStream(taskInfo);
       }
-      return this.irService.connectToStream(taskInfo);
+      return null;
     }).then(
       value => {
         if (value && !value.success) {

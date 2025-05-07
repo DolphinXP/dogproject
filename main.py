@@ -154,7 +154,7 @@ def web_main(host='0.0.0.0', port=8080, verbose=False):
 
 
 if __name__ == "__main__":
-    vis_thread = threading.Thread(target=vis_main, args=("d:/test/test.mp4", "0.0.0.0", 8081))
+    vis_thread = threading.Thread(target=vis_main, args=("d:/test/helmet.mp4", "0.0.0.0", 8081))
     ir_thread = threading.Thread(target=ir_main, args=("d:/test/test1.mp4", "0.0.0.0", 8082))
 
     vis_thread.start()

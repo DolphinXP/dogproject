@@ -8,6 +8,7 @@ import {VisService} from '../service/vis.service';
 import {IrService} from '../service/ir.service';
 import {MessageService} from 'primeng/api';
 import {ResourceUsage} from '../domain/resource-usage';
+import {ProgressBar} from 'primeng/progressbar';
 
 @Component({
   selector: 'app-main',
@@ -15,7 +16,9 @@ import {ResourceUsage} from '../domain/resource-usage';
     SidePanelComponent,
     ViewVisComponent,
     ViewIrComponent,
-    NgClass
+    NgClass,
+    ProgressBar
+
   ],
   providers: [MessageService],
   templateUrl: './main.component.html',
