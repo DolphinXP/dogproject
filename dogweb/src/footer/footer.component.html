@@ -22,7 +22,8 @@
     </button>
 
 
-    <button class="flex items-center justify-center p-2 cursor-pointer rounded-full " title="地图">
+    <button (click)="onMapClick()" class="flex items-center justify-center p-2 cursor-pointer rounded-full "
+            title="地图">
       <img alt="Capture" class="h-16 w-16 hover:filter hover:brightness-50" src="images/map.png">
     </button>
 
@@ -49,3 +50,5 @@
 <p-confirmDialog/>
 
 <p-toast></p-toast>
+
+<app-location-view-dialog></app-location-view-dialog>

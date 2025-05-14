@@ -7,13 +7,15 @@ import {ConfirmDialog} from 'primeng/confirmdialog';
 import {NewTaskDialogComponent} from '../main/new-task-dialog/new-task-dialog.component';
 import {TaskInfo} from '../domain/task-info';
 import {Toast} from 'primeng/toast';
+import {LocationViewDialogComponent} from '../location-view-dialog/location-view-dialog.component';
 
 @Component({
   selector: 'app-footer',
   imports: [
     ConfirmDialog,
     NewTaskDialogComponent,
-    Toast
+    Toast,
+    LocationViewDialogComponent
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './footer.component.html',
@@ -22,6 +24,7 @@ import {Toast} from 'primeng/toast';
 export class FooterComponent {
   @ViewChild('startStreamButton') startStreamButton!: ElementRef;
   @ViewChild(NewTaskDialogComponent) newTaskDialog!: NewTaskDialogComponent;
+  @ViewChild(LocationViewDialogComponent) locationViewDialog!: LocationViewDialogComponent;
 
 
   private router = inject(Router);
@@ -109,5 +112,9 @@ export class FooterComponent {
 
   onTestClick() {
     this.router.navigate(['test']).then(r => console.log(r));
+  }
+
+  onMapClick() {
+    this.locationViewDialog.showDialog();
   }
 }
