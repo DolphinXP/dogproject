@@ -202,8 +202,6 @@ class WebRTCServer:
                     logger.info(f"Closing peer connection {pcId} due to {pc.connectionState} state")
                     await self.close_connection(pcId)
 
-            # 添加轨道到对等连接
-            # 使用relay为每个客户端创建独立轨道副本
             relayed_track = self.relay.subscribe(self.master_track)
             sender = pc.addTrack(relayed_track)
             logger.info(f"Added track to peer connection {pcId}")
