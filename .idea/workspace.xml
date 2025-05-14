@@ -4,13 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4162366c-7323-48d1-84ab-ea05cc64db44" name="更改" comment="Refactor video recording logic to dynamically generate filenames based on task info and add timestamp overlay to frames">
+    <list default="true" id="4162366c-7323-48d1-84ab-ea05cc64db44" name="更改" comment="Refactor filename generation for video recordings to use a more descriptive format and update workspace configuration">
+      <change afterPath="$PROJECT_DIR$/video_recorder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vis_processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/vis_processor.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -110,7 +119,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747222468199</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Refactor filename generation for video recordings to use a more descriptive format and update workspace configuration">
+      <option name="closed" value="true" />
+      <created>1747222702636</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1747222702636</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -139,6 +156,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add video recording functionality with H.264 codec and connection state handling" />
     <MESSAGE value="Refactor video recording logic to dynamically generate filenames based on task info and add timestamp overlay to frames" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactor video recording logic to dynamically generate filenames based on task info and add timestamp overlay to frames" />
+    <MESSAGE value="Refactor filename generation for video recordings to use a more descriptive format and update workspace configuration" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor filename generation for video recordings to use a more descriptive format and update workspace configuration" />
   </component>
 </project>
