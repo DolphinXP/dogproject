@@ -134,7 +134,7 @@ class VisProcessor:
                 json.dump(self.task_info, f, ensure_ascii=False, indent=4)
             self.record_name = f"{self.module_prefix}_{self.task_info['taskId']}_{time.strftime('%Y%m%d_%H%M%S')}.mp4"
         else:
-            self.record_name = f"{self.module_prefix}_NOTASKID_{time.strftime('%Y%m%d_%H%M%S')}.mp4"
+            self.record_name = f"{self.module_prefix}_no-task-id_{time.strftime('%Y%m%d_%H%M%S')}.mp4"
 
         # Initialize video writer with H.264 codec
         output_path = os.path.join(self.output_folder, self.record_name)

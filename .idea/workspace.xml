@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4162366c-7323-48d1-84ab-ea05cc64db44" name="更改" comment="Add video recording functionality with H.264 codec and connection state handling">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="4162366c-7323-48d1-84ab-ea05cc64db44" name="更改" comment="Refactor video recording logic to dynamically generate filenames based on task info and add timestamp overlay to frames">
       <change beforePath="$PROJECT_DIR$/vis_processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/vis_processor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webrtc_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/webrtc_server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,7 +102,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747221007722</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Refactor video recording logic to dynamically generate filenames based on task info and add timestamp overlay to frames">
+      <option name="closed" value="true" />
+      <created>1747222468199</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1747222468199</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -112,7 +118,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -120,6 +138,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add video recording functionality with H.264 codec and connection state handling" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add video recording functionality with H.264 codec and connection state handling" />
+    <MESSAGE value="Refactor video recording logic to dynamically generate filenames based on task info and add timestamp overlay to frames" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor video recording logic to dynamically generate filenames based on task info and add timestamp overlay to frames" />
   </component>
 </project>
