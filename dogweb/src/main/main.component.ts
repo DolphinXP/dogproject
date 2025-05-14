@@ -1,23 +1,21 @@
 import {Component, inject} from '@angular/core';
-import {SidePanelComponent} from './side-panel/side-panel.component';
 import {ViewVisComponent} from './view-vis/view-vis.component';
 import {ViewIrComponent} from './view-ir/view-ir.component';
-import {NgClass} from '@angular/common';
 import {MainService} from '../service/main.service';
 import {VisService} from '../service/vis.service';
 import {IrService} from '../service/ir.service';
 import {MessageService} from 'primeng/api';
 import {ResourceUsage} from '../domain/resource-usage';
-import {ProgressBar} from 'primeng/progressbar';
+import {CompactListComponent} from './compact-list/compact-list.component';
+import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-main',
   imports: [
-    SidePanelComponent,
     ViewVisComponent,
     ViewIrComponent,
-    NgClass,
-    ProgressBar
+    CompactListComponent,
+    NgIf
 
   ],
   providers: [MessageService],

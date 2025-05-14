@@ -1,13 +1,4 @@
 
-.main-view {
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  left: 0;
-  top: 0;
-
-}
-
 .video-blur-bg {
   position: absolute;
   left: 0;
@@ -23,31 +14,15 @@
 }
 
 .sub-view {
-  width: 450px;
-  /*height: 200px;*/
-  right: 50px;
-  bottom: 40px;
-  z-index: 15;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 4px 24px 0 rgba(255, 255, 255, 0.35), 0 2px 8px 0 rgba(0, 0, 0, 0.18);
   border: 1px solid #ccc;
   opacity: 0.9;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
 }
 
 .sub-view:hover {
   opacity: 1.0;
   cursor: pointer;
 }
-
-.sub-view:hover:after {
-  content: "点击切换到主视图";
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  text-align: center;
-  font-size: 12px;
-  color: #fff;
-  text-shadow: -1px 0 rgba(0, 0, 0, 0.2), 0 1px 0 rgba(0, 0, 0, 0.19);
-  display: block;
-}
-
 
