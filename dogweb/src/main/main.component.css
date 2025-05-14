@@ -26,3 +26,15 @@
   cursor: pointer;
 }
 
+.blink {
+  animation: blink-animation 1.5s steps(10, start) infinite;
+}
+
+@keyframes blink-animation {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.1;
+  }
+}
