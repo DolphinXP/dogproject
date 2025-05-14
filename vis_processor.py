@@ -114,14 +114,13 @@ class VisProcessor:
         self.model = None
         print("Model resources released!")
 
-    def start_recording(self, output_folder, duration, filename="output.mp4"):
+    def start_recording(self, output_folder, duration):
         """
         Start recording the video with H.264 codec for HTML5 compatibility.
         """
         if self.video_writer:
             return
 
-        self.record_name = filename
 
         self.output_folder = output_folder
         self.record_duration = duration
@@ -130,11 +129,19 @@ class VisProcessor:
         # Create the output folder if it doesn't exist
         os.makedirs(self.output_folder, exist_ok=True)
 
+        if self.task_info:
+            with open(os.path.join(self.output_folder, f"{self.record_name}.json"), "w", encoding="utf-8") as f:
+                json.dump(self.task_info, f, ensure_ascii=False, indent=4)
+            self.record_name = f"{self.module_prefix}_{self.task_info['taskId']}_{time.strftime('%Y%m%d_%H%M%S')}.mp4"
+        else:
+            self.record_name = f"{self.module_prefix}_NOTASKID_{time.strftime('%Y%m%d_%H%M%S')}.mp4"
+
         # Initialize video writer with H.264 codec
         output_path = os.path.join(self.output_folder, self.record_name)
         fourcc = cv2.VideoWriter_fourcc(*'avc1')  # Use H.264 codec
         frame_width, frame_height = self.output_width, self.output_height  # Ensure consistent frame size
         self.video_writer = cv2.VideoWriter(output_path, fourcc, self.fps, (frame_width, frame_height))
+
 
 
     def record_frame(self, frame):
@@ -160,9 +167,6 @@ class VisProcessor:
             self.video_writer = None
             print("Video recording stopped and saved.")
 
-            if self.task_info:
-                with open(os.path.join(self.output_folder, f"{self.record_name}.json"), "w", encoding="utf-8") as f:
-                    json.dump(self.task_info, f, ensure_ascii=False, indent=4)
 
     def predict(self, image):
         try:
@@ -251,14 +255,19 @@ class VisProcessor:
                 # YOLO predict
                 predicted_image, detections = self.predict(combined_frame)
 
+                # add datetime to left-bottom corner
+                time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+                cv2.putText(predicted_image, time_str, (10, predicted_image.shape[0] - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3)
+
                 # TEST
                 # print('detections:', detections)
                 target_class_name = "NO-Safety Vest"
                 filtered_detections = [d for d in detections if d['class_name'] == target_class_name]
                 if len(filtered_detections) > 0:
-                    filename = f"{self.module_prefix}_{time.strftime('%Y%m%d_%H%M%S')}.mp4"
-                    self.start_recording('detected', 10, filename)
+                    self.start_recording('detected', 10)
                     self.record_frame(predicted_image)
+
 
                 self.callback(predicted_image)
                 self._frame_count += 1

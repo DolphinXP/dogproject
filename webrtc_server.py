@@ -65,11 +65,6 @@ class VideoSource:
                 logger.error("Frame is None or empty, using test pattern")
                 frame = self.get_test_frame()
 
-        # add datetime to left-bottom corner
-        time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        cv2.putText(frame, time_str, (10, frame.shape[0] - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1)
-
         return frame, self._frame_count
 
 

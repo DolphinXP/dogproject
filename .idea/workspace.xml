@@ -4,14 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4162366c-7323-48d1-84ab-ea05cc64db44" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/openh264-1.8.0-win64.dll.bz2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/DogProject.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/DogProject.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vis_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/vis_main.py" afterDir="false" />
+    <list default="true" id="4162366c-7323-48d1-84ab-ea05cc64db44" name="更改" comment="Add video recording functionality with H.264 codec and connection state handling">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vis_processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/vis_processor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/webrtc_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/webrtc_server.py" afterDir="false" />
     </list>
@@ -29,12 +23,12 @@
     &quot;assignee&quot;: &quot;DolphinXP&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/DolphinXP/dogproject.git&quot;,
-    &quot;accountId&quot;: &quot;b4363ca7-fe42-4ab8-b534-0d8bbcf9513f&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/DolphinXP/dogproject.git",
+    "accountId": "62b4d355-1963-4b18-a327-0a0136b7aaea"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 8
@@ -102,6 +96,15 @@
       <option name="presentableId" value="Default" />
       <updated>1747215850580</updated>
     </task>
+    <task id="LOCAL-00001" summary="Add video recording functionality with H.264 codec and connection state handling">
+      <option name="closed" value="true" />
+      <created>1747221007722</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1747221007722</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -114,5 +117,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add video recording functionality with H.264 codec and connection state handling" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add video recording functionality with H.264 codec and connection state handling" />
   </component>
 </project>
