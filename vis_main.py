@@ -14,6 +14,10 @@ logger = logging.getLogger("vis_main")
 webrtc_server = None
 vis_processor = None
 
+async def handle_connection_state_change(state):
+    logger.info(f"Connection state updated: {state}")
+    if state == "failed" or state == "closed":
+        vis_processor.set_task_info(None)
 
 async def offer(request):
     """Handle WebRTC offer from browser client"""
@@ -101,6 +105,7 @@ def vis_main(video, host='0.0.0.0', port=8081, verbose=False):
 
     # Initialize WebRTC server
     webrtc_server = WebRTCServer()
+    webrtc_server.connection_state_callback = handle_connection_state_change
     logger.info(f"Created WebRTCServer")
 
     # Initialize camera with video file

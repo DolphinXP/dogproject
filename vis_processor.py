@@ -1,6 +1,8 @@
+import json
 import logging
 import threading
 import time
+import os
 
 import cv2
 import numpy as np
@@ -19,6 +21,10 @@ class VisProcessor:
     """
 
     def __init__(self, fps=30):
+        self.module_prefix = "vis"
+        self.output_width = 1280
+        self.output_height = 480
+
         self.fps = fps
         self._stop = False
         self._frame_count = 0
@@ -32,6 +38,13 @@ class VisProcessor:
         self.device = 'cpu'
         self.model = None
         self.model_path = 'model/best.pt'
+        # for video recording
+        self.allow_recording = False
+        self.video_writer = None
+        self.output_folder = None
+        self.record_name = None
+        self.record_duration = None
+        self.record_start_time = None
 
     def set_task_info(self, task_info):
         self.task_info = task_info
@@ -100,6 +113,56 @@ class VisProcessor:
 
         self.model = None
         print("Model resources released!")
+
+    def start_recording(self, output_folder, duration, filename="output.mp4"):
+        """
+        Start recording the video with H.264 codec for HTML5 compatibility.
+        """
+        if self.video_writer:
+            return
+
+        self.record_name = filename
+
+        self.output_folder = output_folder
+        self.record_duration = duration
+        self.record_start_time = time.time()
+
+        # Create the output folder if it doesn't exist
+        os.makedirs(self.output_folder, exist_ok=True)
+
+        # Initialize video writer with H.264 codec
+        output_path = os.path.join(self.output_folder, self.record_name)
+        fourcc = cv2.VideoWriter_fourcc(*'avc1')  # Use H.264 codec
+        frame_width, frame_height = self.output_width, self.output_height  # Ensure consistent frame size
+        self.video_writer = cv2.VideoWriter(output_path, fourcc, self.fps, (frame_width, frame_height))
+
+
+    def record_frame(self, frame):
+        """
+        Write a frame to the video file if recording is active and within the duration limit.
+        """
+        if self.video_writer:
+            elapsed_time = time.time() - self.record_start_time
+            if elapsed_time <= self.record_duration:
+                # Ensure frame size matches the initialized size
+                frame = cv2.resize(frame, (self.output_width, self.output_height))
+                self.video_writer.write(frame)
+            else:
+                logger.info("Recording duration reached, stopping recording.")
+                self.stop_recording()
+
+    def stop_recording(self):
+        """
+        Stop recording the video and ensure the file is properly closed.
+        """
+        if self.video_writer:
+            self.video_writer.release()
+            self.video_writer = None
+            print("Video recording stopped and saved.")
+
+            if self.task_info:
+                with open(os.path.join(self.output_folder, f"{self.record_name}.json"), "w", encoding="utf-8") as f:
+                    json.dump(self.task_info, f, ensure_ascii=False, indent=4)
 
     def predict(self, image):
         try:
@@ -187,7 +250,15 @@ class VisProcessor:
 
                 # YOLO predict
                 predicted_image, detections = self.predict(combined_frame)
+
+                # TEST
                 # print('detections:', detections)
+                target_class_name = "NO-Safety Vest"
+                filtered_detections = [d for d in detections if d['class_name'] == target_class_name]
+                if len(filtered_detections) > 0:
+                    filename = f"{self.module_prefix}_{time.strftime('%Y%m%d_%H%M%S')}.mp4"
+                    self.start_recording('detected', 10, filename)
+                    self.record_frame(predicted_image)
 
                 self.callback(predicted_image)
                 self._frame_count += 1

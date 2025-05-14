@@ -143,11 +143,10 @@ class WebRTCServer:
         # 视频源
         self.video_source = VideoSource()
 
-        # 主视频轨道
-        self.master_track = VideoStreamTrack(self.video_source, fps=fps)
 
         # WebRTC组件
         self.peer_connections: Dict[str, RTCPeerConnection] = {}
+        self.tracks: Dict[str, VideoStreamTrack] = {}
         self.relay = MediaRelay()
 
         # ICE服务器配置
@@ -155,6 +154,9 @@ class WebRTCServer:
             RTCIceServer(urls="stun:stun.l.google.com:19302"),
             RTCIceServer(urls="stun:stun1.l.google.com:19302"),
         ]
+
+
+        self.connection_state_callback = None
 
         logger.info("WebRTCServer initialized")
 
@@ -198,11 +200,21 @@ class WebRTCServer:
             @pc.on("connectionstatechange")
             async def on_connectionstatechange():
                 logger.info(f"Connection {pcId} state is {pc.connectionState}")
+
+                if self.connection_state_callback:
+                    await self.connection_state_callback(pc.connectionState)
+
                 if pc.connectionState == "failed" or pc.connectionState == "closed":
                     logger.info(f"Closing peer connection {pcId} due to {pc.connectionState} state")
                     await self.close_connection(pcId)
 
-            relayed_track = self.relay.subscribe(self.master_track)
+            # 为此连接创建新的视频轨道
+            track = VideoStreamTrack(self.video_source)
+            self.tracks[pcId] = track
+
+            # 添加轨道到对等连接
+            # 使用relay为每个客户端创建独立轨道副本
+            relayed_track = self.relay.subscribe(track)
             sender = pc.addTrack(relayed_track)
             logger.info(f"Added track to peer connection {pcId}")
 
@@ -264,7 +276,10 @@ class WebRTCServer:
             logger.info(f"Closing peer connection {pcId}")
             await pc.close()
 
-            self.master_track.stop()
+            # 停止并清理相应的轨道
+            if pcId in self.tracks:
+                track = self.tracks.pop(pcId)
+                track.stop()
 
             return True
         return False
@@ -277,6 +292,9 @@ class WebRTCServer:
         coros = [pc.close() for pc in self.peer_connections.values()]
         await asyncio.gather(*coros)
 
-        self.master_track.stop()
+        # 停止所有轨道
+        for track in self.tracks.values():
+            track.stop()
 
+        self.peer_connections.clear()
         self.tracks.clear()
