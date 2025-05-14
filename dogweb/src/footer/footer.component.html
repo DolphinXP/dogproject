@@ -10,18 +10,20 @@
       <img alt="Test" class="h-16 w-16 hover:filter hover:brightness-50" src="images/home.png">
     </button>
 
-    <button #startStreamButton (click)="onStartStreamClick()" class="flex items-center gap-2 justify-center p-2 cursor-pointer rounded-full "
+    <button #startStreamButton (click)="onStartStreamClick()"
+            class="flex items-center gap-2 justify-center p-2 cursor-pointer rounded-full "
             title="开始">
       <img alt="Start" class="h-16 w-16 hover:filter hover:brightness-50" src="images/start.png">
     </button>
-    <button #stopStreamButton (click)="onStopStreamClick($event)" class="flex items-center gap-2 justify-center p-2 cursor-pointer rounded-full "
+    <button #stopStreamButton (click)="onStopStreamClick($event)"
+            class="flex items-center gap-2 justify-center p-2 cursor-pointer rounded-full "
             title="停止">
       <img alt="Stop" class="h-16 w-16 hover:filter hover:brightness-50" src="images/stop.png">
     </button>
 
 
-    <button class="flex items-center justify-center p-2 cursor-pointer rounded-full " title="手动录制">
-      <img alt="Capture" class="h-16 w-16 hover:filter hover:brightness-50" src="images/lens.png">
+    <button class="flex items-center justify-center p-2 cursor-pointer rounded-full " title="地图">
+      <img alt="Capture" class="h-16 w-16 hover:filter hover:brightness-50" src="images/map.png">
     </button>
 
     <!--    <div class="w-2"></div>-->
@@ -39,7 +41,7 @@
     </button>
   </div>
 
-  <div class=" text-xs ">Version: 0.1</div>
+  <div class=" text-sm ">Version: 0.1</div>
 </div>
 
 <app-new-task-dialog (cancelNewTask)="onNewTaskCancelled()"
