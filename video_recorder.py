@@ -61,6 +61,11 @@ class VideoRecorder:
         if not self.video_writer:
             return
 
+        # Validate frame input
+        if frame is None or len(frame.shape) < 2:
+            logger.warning("Invalid frame received, skipping.")
+            return
+
         elapsed_time = time.time() - self.record_start_time
         if elapsed_time > self.record_duration:
             logger.info("Recording duration reached, stopping recording.")
