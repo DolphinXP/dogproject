@@ -35,18 +35,22 @@ class VideoRecorder:
         # Create the output folder if it doesn't exist
         os.makedirs(self.output_folder, exist_ok=True)
 
+        # Generate record_name BEFORE using it
         if self.task_info:
-            with open(os.path.join(self.output_folder, f"{self.record_name}.json"), "w", encoding="utf-8") as f:
-                json.dump(self.task_info, f, ensure_ascii=False, indent=4)
             self.record_name = f"{self.module_prefix}_{self.task_info['taskId']}_{time.strftime('%Y%m%d_%H%M%S')}.mp4"
         else:
             self.record_name = f"{self.module_prefix}_no-task-id_{time.strftime('%Y%m%d_%H%M%S')}.mp4"
 
+        # Save task info to JSON file
+        if self.task_info:
+            json_path = os.path.join(self.output_folder, f"{self.record_name}.json")
+            with open(json_path, "w", encoding="utf-8") as f:
+                json.dump(self.task_info, f, ensure_ascii=False, indent=4)
+
         # Initialize video writer with H.264 codec
         output_path = os.path.join(self.output_folder, self.record_name)
         fourcc = cv2.VideoWriter_fourcc(*'avc1')  # Use H.264 codec
-        frame_width, frame_height = self.output_width, self.output_height  # Ensure consistent frame size
-        self.video_writer = cv2.VideoWriter(output_path, fourcc, self.fps, (frame_width, frame_height))
+        self.video_writer = cv2.VideoWriter(output_path, fourcc, self.fps, (self.output_width, self.output_height))
 
 
 
@@ -54,15 +58,24 @@ class VideoRecorder:
         """
         Write a frame to the video file if recording is active and within the duration limit.
         """
-        if self.video_writer:
-            elapsed_time = time.time() - self.record_start_time
-            if elapsed_time <= self.record_duration:
-                # Ensure frame size matches the initialized size
-                frame = cv2.resize(frame, (self.output_width, self.output_height))
-                self.video_writer.write(frame)
-            else:
-                logger.info("Recording duration reached, stopping recording.")
-                self.stop_recording()
+        if not self.video_writer:
+            return
+
+        # Validate frame input
+        if frame is None or len(frame.shape) < 2:
+            logger.warning("Invalid frame received, skipping.")
+            return
+
+        elapsed_time = time.time() - self.record_start_time
+        if elapsed_time > self.record_duration:
+            logger.info("Recording duration reached, stopping recording.")
+            self.stop_recording()
+            return
+
+        # Only resize if frame size doesn't match
+        if frame.shape[:2] != (self.output_height, self.output_width):
+            frame = cv2.resize(frame, (self.output_width, self.output_height))
+        self.video_writer.write(frame)
 
     def stop_recording(self):
         """
@@ -71,4 +84,4 @@ class VideoRecorder:
         if self.video_writer:
             self.video_writer.release()
             self.video_writer = None
-            print("Video recording stopped and saved.")
+            logger.info("Video recording stopped and saved.")
